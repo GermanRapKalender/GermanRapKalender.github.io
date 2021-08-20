@@ -4,7 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 # My ini file for API Stuff
-GermanRapKalenderCode/MyAPIConfig.ini
+GermanRapKalenderCode/GermanRapKalenderClassLibaries/MyAPIConfig.ini
 
 # User-specific files
 *.rsuser

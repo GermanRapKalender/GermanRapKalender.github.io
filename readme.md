@@ -4,6 +4,8 @@ Has Data, Website Source, Source for C# part of this, for the GermanRapKalender.
 
 Licenses via MIT. Lots of Info to come.
 
+[Link to Website](https://germanrapkalender.github.io/website/)
+
 TL;DR:
 
 Took another [small project of mine](https://github.com/TwosHusbandS/DasIstRaueberMusik) and am planning to create a reddit bot around it and have a mate create a website around it.
