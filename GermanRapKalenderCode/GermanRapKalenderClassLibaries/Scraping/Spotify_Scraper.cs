@@ -28,7 +28,7 @@ namespace GermanRapKalenderClassLibaries.Scraping
 
 
 
-		public static async Task<string> GetLinkFromSearch(Helper.Event myRelease)
+		public static async Task<string> GetLinkFromSearch(Helper.CalenderEntry myRelease)
 		{
 			if (!ManualStaticConstructorRunAlready)
 			{
@@ -37,11 +37,11 @@ namespace GermanRapKalenderClassLibaries.Scraping
 			}
 
 			SearchRequest.Types mySearchType;
-			if (myRelease.ReleaseKind == Helper.EventType.Album)
+			if (myRelease.CalenderEntryType == Helper.CalenderEntryTypes.Album)
 			{
 				mySearchType = SearchRequest.Types.Album;
 			}
-			else if (myRelease.ReleaseKind == Helper.EventType.Single)
+			else if (myRelease.CalenderEntryType == Helper.CalenderEntryTypes.Single)
 			{
 				mySearchType = SearchRequest.Types.Track;
 			}

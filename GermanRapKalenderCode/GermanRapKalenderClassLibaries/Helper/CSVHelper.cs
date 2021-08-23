@@ -8,15 +8,13 @@ namespace GermanRapKalenderClassLibaries.Helper
 {
 	public class CSVHelper
 	{
-		static string HeadingLine = "Artist" + CharSeperator + "Title" + CharSeperator + "ReleaseKind" + CharSeperator + "Info" + CharSeperator + "Link";
-
 		static char CharSeperator = '=';
 
-		public static IList<Helper.Event> Read(string FilePath)
-		{
-			//MainWindow.MW.viewModel.Releases.Clear();
+		static string HeadingLine = "Date" + CharSeperator + "CalenderEntryType" + CharSeperator + "Artist" + CharSeperator + "Title" + CharSeperator + "Info" + CharSeperator + "Link";
 
-			IList<Helper.Event> myReleaseList = new List<Helper.Event>();
+		public static IList<Helper.CalenderEntry> Read(string FilePath)
+		{
+			IList<Helper.CalenderEntry> myReleaseList = new List<Helper.CalenderEntry>();
 
 			string[] filecontent = Helper.FileHandling.ReadFileEachLine(FilePath);
 			if (filecontent.Length > 1)
@@ -28,51 +26,63 @@ namespace GermanRapKalenderClassLibaries.Helper
 						string[] Line = filecontent[i].Split(CharSeperator);
 						if (Line.Length >= 5)
 						{
-							EventType tmp;
-
-							if (Line[2].ToLower() == "album")
+							CalenderEntryTypes tmp = CalenderEntryTypes.Event;
+							foreach (CalenderEntryTypes CET in Enum.GetValues(typeof(CalenderEntryTypes)))
 							{
-								tmp = EventType.Album;
+								if (Line[1].ToLower() == CET.ToString().ToLower())
+								{
+									tmp = CET;
+									break;
+								}
 							}
-							else
-							{
-								tmp = EventType.Single;
-							}
 
-							myReleaseList.Add(new Helper.Event
+							myReleaseList.Add(new Helper.CalenderEntry
 							{
-								Artist = Line[0],
-								Title = Line[1],
-								ReleaseKind = tmp,
-								Info = Line[3],
-								Link = Line[4]
+								Date = Line[0],
+								CalenderEntryType = tmp,
+								Artist = Line[2],
+								Title = Line[3],
+								Info = Line[4],
+								Links = Line[5]
 							});
 						}
 					}
 				}
 			}
 			return myReleaseList;
+		}
+
+
+
+		public static void Save(string FilePath, IList<CalenderEntry> ListOfReleases, bool DoWeActuallyWantToSave)
+		{
+			if (DoWeActuallyWantToSave)
+			{
+				List<string> temp = new List<string>();
+				temp.Add(HeadingLine);
+				foreach (CalenderEntry myRelease in ListOfReleases)
+				{
+					temp.Add(myRelease.Date + CharSeperator + myRelease.CalenderEntryType.ToString() + CharSeperator + myRelease.Artist + CharSeperator + myRelease.Title + CharSeperator + myRelease.Info + CharSeperator + myRelease.Links);
+				}
+				Helper.FileHandling.WriteStringToFileOverwrite(FilePath, temp.ToArray());
+			}
+		}
+
+		public static void Export()
+		{
 
 		}
 
 
-		//	public static void Save(bool pManualSafe = false)
-		//	{
-		//		Save(Globals.CurrCSVFile, MainWindow.MW.viewModel.Releases, pManualSafe);
-		//	}
-
-		public static void Save(string FilePath, IList<Event> ListOfReleases) //, bool pManualSave = false)
+		public enum ImportTypes
 		{
-			//if (pManualSave || Settings.AutoSave)
-			{
-				List<string> temp = new List<string>();
-				temp.Add(HeadingLine);
-				foreach (Event myRelease in ListOfReleases)
-				{
-					temp.Add(myRelease.Artist + CharSeperator + myRelease.Title + CharSeperator + myRelease.ReleaseKind.ToString() + CharSeperator + myRelease.Info + CharSeperator + myRelease.Link);
-				}
-				Helper.FileHandling.WriteStringToFileOverwrite(FilePath, temp.ToArray());
-			}
+			Overwrite,
+			Add
+		}
+
+		public static void Import()
+		{
+
 		}
 	}
 }

@@ -78,6 +78,16 @@ namespace GermanRapKalenderClassLibaries.Helper
 		}
 
 
+
+
+
+
+
+
+
+
+
+
 		/// <summary>
 		/// Gets all the Files in one Folder (and its Subfolders)
 		/// </summary>

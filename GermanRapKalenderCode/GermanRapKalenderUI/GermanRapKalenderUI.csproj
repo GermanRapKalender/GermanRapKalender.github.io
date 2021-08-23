@@ -1,20 +1,72 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFrameworks>net5.0-windows</TargetFrameworks>
     <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <SignAssembly>false</SignAssembly>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\MyBuild</OutputPath>
+    <OutputPath></OutputPath>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutputPath />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Artwork\bg.png" />
+    <None Remove="Artwork\exit.png" />
+    <None Remove="Artwork\exit_mo.png" />
+    <None Remove="Artwork\hamburger.png" />
+    <None Remove="Artwork\hamburger_mo.png" />
+    <None Remove="Artwork\icon.ico" />
+    <None Remove="Artwork\icon.png" />
+    <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.31\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <COMReference Include="{215d64d2-031c-33c7-96e3-61794cd1ee61}">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>4</VersionMinor>
+      <VersionMajor>2</VersionMajor>
+      <Guid>215d64d2-031c-33c7-96e3-61794cd1ee61</Guid>
+    </COMReference>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Costura.Fody" Version="5.4.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
+    <PackageReference Include="Prism.Core" Version="8.1.97" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GermanRapKalenderClassLibaries\GermanRapKalenderClassLibaries.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Installer\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Artwork\bg.png" />
+    <Resource Include="Artwork\exit.png" />
+    <Resource Include="Artwork\exit_mo.png" />
+    <Resource Include="Artwork\hamburger.png" />
+    <Resource Include="Artwork\hamburger_mo.png" />
+    <Resource Include="Artwork\icon.ico" />
+    <Resource Include="Artwork\icon.png" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;..\GermanRapKalenderClassLibaries\bin\Release\net5.0\GermanRapKalenderClassLibaries.dll&quot; &quot;$(ProjectDir)\bin\Release\net5.0-windows\GermanRapKalenderClassLibaries.dll&quot;" />
+  </Target>
 
 </Project>

@@ -9,9 +9,9 @@ namespace GermanRapKalenderClassLibaries.Scraping
 {
 	public class YoutubeSearch_Scraper
 	{
-		public static async Task<string> GetLinkFromSearch(Helper.Event myRelease)
+		public static async Task<string> GetLinkFromSearch(Helper.CalenderEntry myRelease)
 		{
-			if (myRelease.ReleaseKind != Helper.EventType.Single)
+			if (myRelease.CalenderEntryType != Helper.CalenderEntryTypes.Single)
 			{
 				return "";
 			}

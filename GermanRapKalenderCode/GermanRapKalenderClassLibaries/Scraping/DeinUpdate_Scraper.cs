@@ -31,9 +31,9 @@ namespace GermanRapKalenderClassLibaries.Scraping
 		}
 
 
-		public async static Task<List<Helper.Event>> GetReleasesFromLinkAsync(string pWebSource)
+		public async static Task<List<Helper.CalenderEntry>> GetReleasesFromLinkAsync(string pWebSource, DateTime myDT)
 		{
-			List<Helper.Event> myReleaseList = new List<Helper.Event>();
+			List<Helper.CalenderEntry> myReleaseList = new List<Helper.CalenderEntry>();
 
 			string webSource = pWebSource;
 
@@ -143,12 +143,11 @@ namespace GermanRapKalenderClassLibaries.Scraping
 
 						if (Content[1] == "A")
 						{
-							myReleaseList.Add(new Helper.Event { Artist = MyArtist, Title = MyTitle, ReleaseKind = Helper.EventType.Album, Info = "", Link = "" });
+							myReleaseList.Add(new Helper.CalenderEntry { Date = myDT.ToString("yyyy_MM_dd"), CalenderEntryType = Helper.CalenderEntryTypes.Album, Artist = MyArtist, Title = MyTitle,  Info = "", Links = "" });
 						}
 						else if (Content[1] == "S")
 						{
-							myReleaseList.Add(new Helper.Event { Artist = MyArtist, Title = MyTitle, ReleaseKind = Helper.EventType.Single, Info = "", Link = "" });
-							//myReleaseList.Add(new Release(MyArtist, MyTitle, ReleaseKinds.Single));
+							myReleaseList.Add(new Helper.CalenderEntry { Date = myDT.ToString("yyyy_MM_dd"), CalenderEntryType = Helper.CalenderEntryTypes.Single, Artist = MyArtist, Title = MyTitle, Info = "", Links = "" });
 						}
 					}
 				}
