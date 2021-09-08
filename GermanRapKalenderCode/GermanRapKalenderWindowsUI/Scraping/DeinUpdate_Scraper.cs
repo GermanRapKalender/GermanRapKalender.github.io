@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace GermanRapKalenderClassLibaries.Scraping
+namespace DIRM.Scraping
 {
-	public class DeinUpdate_Scraper
+	class DeinUpdate_Scraper
 	{
 		public async static Task<string> GetWebsiteSource(string pLink)
 		{
@@ -31,7 +32,7 @@ namespace GermanRapKalenderClassLibaries.Scraping
 		}
 
 
-		public static List<Helper.CalenderEntry> GetReleasesFromLinkAsync(string pWebSource, DateTime myDT)
+		public async static Task<List<Helper.CalenderEntry>> GetReleasesFromLinkAsync(string pWebSource)
 		{
 			List<Helper.CalenderEntry> myReleaseList = new List<Helper.CalenderEntry>();
 
@@ -61,9 +62,12 @@ namespace GermanRapKalenderClassLibaries.Scraping
 				MyMatchUndSo = MyMatchUndSo.Replace("&#8222;", "");
 				MyMatchUndSo = MyMatchUndSo.Replace("&#8220;", "");
 				MyMatchUndSo = MyMatchUndSo.Replace(" <em>", "<em>");
+				MyMatchUndSo = MyMatchUndSo.Replace(" <i>", "<i>");
 				MyMatchUndSo = MyMatchUndSo.Replace("<em>", "=");
+				MyMatchUndSo = MyMatchUndSo.Replace("<i>", "=");
 				MyMatchUndSo = MyMatchUndSo.Replace(" =", "=");
 				MyMatchUndSo = MyMatchUndSo.Replace("</em>", "|");
+				MyMatchUndSo = MyMatchUndSo.Replace("</i>", "|");
 
 				Helper.Logger.Log(MyMatchUndSo);
 
@@ -129,8 +133,8 @@ namespace GermanRapKalenderClassLibaries.Scraping
 					if (Content.Length > 2)
 					{
 						// Trim some shit at start and end again...
-						string MyArtist = Content[0].TrimStart(' ').TrimEnd(' ');
-						string MyTitle = Content[2].TrimStart(' ').TrimEnd(' ');
+						string MyArtist = Helper.FileHandling.RemoveLeadingTrailingSpaces(Content[0]);
+						string MyTitle = Helper.FileHandling.RemoveLeadingTrailingSpaces(Content[2]);
 
 						if (String.IsNullOrWhiteSpace(MyArtist))
 						{
@@ -143,11 +147,11 @@ namespace GermanRapKalenderClassLibaries.Scraping
 
 						if (Content[1] == "A")
 						{
-							myReleaseList.Add(new Helper.CalenderEntry { Date = myDT.ToString("yyyy_MM_dd"), CalenderEntryType = Helper.CalenderEntryTypes.Album, Artist = MyArtist, Title = MyTitle,  Info = "", Links = "" });
+							myReleaseList.Add(new Helper.CalenderEntry { Artist = MyArtist, Title = MyTitle, CalenderEntryType = Helper.CalenderEntryTypes.Album, Date = ((DateTime)MainWindow.MW.dp.SelectedDate).ToString("yyyy_MM_dd"), Info = "", Link = "" });
 						}
 						else if (Content[1] == "S")
 						{
-							myReleaseList.Add(new Helper.CalenderEntry { Date = myDT.ToString("yyyy_MM_dd"), CalenderEntryType = Helper.CalenderEntryTypes.Single, Artist = MyArtist, Title = MyTitle, Info = "", Links = "" });
+							myReleaseList.Add(new Helper.CalenderEntry { Artist = MyArtist, Title = MyTitle, CalenderEntryType = Helper.CalenderEntryTypes.Single, Date = ((DateTime)MainWindow.MW.dp.SelectedDate).ToString("yyyy_MM_dd"), Info = "", Link = "" });
 						}
 					}
 				}

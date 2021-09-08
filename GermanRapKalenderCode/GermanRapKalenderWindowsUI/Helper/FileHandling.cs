@@ -2,24 +2,28 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Diagnostics;
+using System.Net;
 
-namespace GermanRapKalenderClassLibaries.Helper
+namespace DIRM.Helper
 {
+
 	/// <summary>
 	/// Class for FileHandling
 	/// </summary>
-	public static class FileHandling
+	static class FileHandling
 	{
 
 		[DllImport("kernel32.dll")]
-		static extern bool CreateSymbolicLink(string lpSymlinkFileName, string lpTargetFileName, SymbolicLink dwFlags);
+		static extern bool CreateSymbolicLink(
+string lpSymlinkFileName, string lpTargetFileName, SymbolicLink dwFlags);
 
 		enum SymbolicLink
 		{
@@ -44,6 +48,47 @@ namespace GermanRapKalenderClassLibaries.Helper
 		{
 			File,
 			Folder
+		}
+
+		/// <summary>
+		/// Opens Dialog for File or Folder picker. Returns "" if nothing is picked.
+		/// </summary>
+		/// <param name="pPathDialogType"></param>
+		/// <param name="pTitle"></param>
+		/// <param name="pFilter"></param>
+		/// <param name="pStartLocation"></param>
+		/// <returns></returns>
+		public static string OpenDialogExplorer(PathDialogType pPathDialogType, string pTitle, string pStartLocation, bool pMultiSelect = false, string pFilter = null)
+		{
+			if (pPathDialogType == PathDialogType.File)
+			{
+				OpenFileDialog myFileDialog = new OpenFileDialog();
+				myFileDialog.Filter = pFilter;
+				myFileDialog.InitialDirectory = pStartLocation;
+				myFileDialog.Title = pTitle;
+				myFileDialog.Multiselect = pMultiSelect;
+
+				myFileDialog.ShowDialog();
+
+				return string.Join(",", myFileDialog.FileNames);
+			}
+			else if (pPathDialogType == PathDialogType.Folder)
+			{
+				var fsd = new FolderSelectDialog(pTitle, pStartLocation);
+				fsd.ShowDialog();
+				return fsd.FileName;
+			}
+			return "";
+		}
+
+		public static string SaveFileDialog(string Title, string Filter)
+		{
+			SaveFileDialog saveFileDialog = new SaveFileDialog();
+			saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			saveFileDialog.Filter = Filter;
+			saveFileDialog.Title = Title;
+			saveFileDialog.ShowDialog();
+			return saveFileDialog.FileName;
 		}
 
 
@@ -77,14 +122,26 @@ namespace GermanRapKalenderClassLibaries.Helper
 			return di.Attributes.HasFlag(System.IO.FileAttributes.ReparsePoint);
 		}
 
+		public static Version GetVersionFromFile(string filePath, bool defaultToHighVersion = false)
+		{
+			Version rtrn = new Version("0.0.0.1");
+			if (defaultToHighVersion)
+			{
+				rtrn = new Version("99.99.99.99");
+			}
 
+			if (Helper.FileHandling.doesFileExist(filePath))
+			{
+				try
+				{
+					FileVersionInfo FVI = FileVersionInfo.GetVersionInfo(filePath);
+					rtrn = new Version(FVI.FileVersion);
+				}
+				catch { }
+			}
 
-
-
-
-
-
-
+			return rtrn;
+		}
 
 
 
@@ -217,8 +274,8 @@ namespace GermanRapKalenderClassLibaries.Helper
 				}
 				catch
 				{
-					//new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Getting LastModified Date of File: '" + pFilePath + "' failed.").ShowDialog();
 					Helper.Logger.Log("Getting LastModified Date of File: '" + pFilePath + "' failed.");
+					new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Getting LastModified Date of File: '" + pFilePath + "' failed.").ShowDialog();
 				}
 			}
 			return creation;
@@ -249,9 +306,9 @@ namespace GermanRapKalenderClassLibaries.Helper
 				//Creating the actual Hardlink
 				CreateHardLink(pLinkFilePath, pRealFilePath, IntPtr.Zero);
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				//new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Creating Hardlink in: '" + pLinkFilePath + "' for existing file '" + pRealFilePath + "' failed.\nI suggest you restart the Program (maybe Repair) and contact me if it happens again.\n\nErrorMessage:\n" + e.ToString()).ShowDialog();
+				new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Creating Hardlink in: '" + pLinkFilePath + "' for existing file '" + pRealFilePath + "' failed.\nI suggest you restart the Program (maybe Repair) and contact me if it happens again.\n\nErrorMessage:\n" + e.ToString()).ShowDialog();
 				Helper.Logger.Log("Creating Hardlink in: '" + pLinkFilePath + "' for existing file '" + pRealFilePath + "' failed", true, 0);
 			}
 		}
@@ -274,9 +331,9 @@ namespace GermanRapKalenderClassLibaries.Helper
 				createPath(sth[0]);
 				File.Move(pMoveFromFilePath, pMoveToFilePath);
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				//new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Moving File: '" + pMoveFromFilePath + "' to '" + pMoveToFilePath + "' failed.\nI suggest you restart the Program and contact me if it happens again.\n\nErrorMessage:\n" + e.ToString()).ShowDialog();
+				new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Moving File: '" + pMoveFromFilePath + "' to '" + pMoveToFilePath + "' failed.\nI suggest you restart the Program and contact me if it happens again.\n\nErrorMessage:\n" + e.ToString()).ShowDialog();
 				Helper.Logger.Log("Moving File: '" + pMoveFromFilePath + "' to '" + pMoveToFilePath + "' failed.", true, 0);
 			}
 		}
@@ -299,10 +356,13 @@ namespace GermanRapKalenderClassLibaries.Helper
 					Directory.Move(Source, Dest);
 				}
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				//new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Moving Path: '" + Source + "' to '" + Dest + "' failed.\nI suggest you restart the Program and contact me if it happens again.\n\nErrorMessage:\n" + e.ToString()).ShowDialog();
-				Helper.Logger.Log("Moving Path: '" + Source + "' to '" + Dest + "' failed.", true, 0);
+				MainWindow.MW.Dispatcher.Invoke(() =>
+				{
+					Helper.Logger.Log("Moving Path: '" + Source + "' to '" + Dest + "' failed.", true, 0);
+					new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Moving Path: '" + Source + "' to '" + Dest + "' failed.\nI suggest you restart the Program and contact me if it happens again.\n\nErrorMessage:\n" + e.ToString()).ShowDialog();
+				});
 			}
 		}
 
@@ -313,7 +373,6 @@ namespace GermanRapKalenderClassLibaries.Helper
 		/// <param name="pContent"></param>
 		public static void WriteStringToFileOverwrite(string pFilePath, string[] pContent)
 		{
-
 			if (doesFileExist(pFilePath))
 			{
 				deleteFile(pFilePath);
@@ -323,6 +382,17 @@ namespace GermanRapKalenderClassLibaries.Helper
 				createPathOfFile(pFilePath);
 			}
 			File.WriteAllLines(pFilePath, pContent);
+		}
+
+
+		public static string RemoveLeadingTrailingSpaces(string input)
+		{
+			return input.Trim();
+			//while (input[input.Length - 1] == ' ' || input[0] == ' ')
+			//{
+			//	input.Trim(' ');
+			//}
+			//return input;
 		}
 
 
@@ -339,6 +409,31 @@ namespace GermanRapKalenderClassLibaries.Helper
 
 
 		/// <summary>
+		/// Adding to DebugFile.
+		/// </summary>
+		/// <param name="pLineContent"></param>
+		public static void AddToDebug(string pLineContent)
+		{
+
+			pLineContent = "[" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") + "] (" + intrandom + ") - " + pLineContent;
+
+			string pFilePath = Globals.ProjectInstallationPath.TrimEnd('\\') + @"\AAA - DEBUG.txt";
+
+			// Should be quicker than checking if File exists, and also checks for more erros
+			try
+			{
+				StreamWriter sw;
+				sw = File.AppendText(pFilePath);
+				sw.Write(pLineContent + Environment.NewLine);
+				sw.Close();
+			}
+			catch (Exception e)
+			{
+				new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Writing to Log failed. File was probably deleted after start of Program.\nI suggest you restart the Program and contact me if it happens again.\n\nErrorMessage:\n" + e.ToString()).ShowDialog();
+			}
+		}
+
+		/// <summary>
 		/// Method we use to add one line of text as a new line to a text file
 		/// </summary>
 		/// <param name="pFilePath"></param>
@@ -353,9 +448,9 @@ namespace GermanRapKalenderClassLibaries.Helper
 				sw.Write(pLineContent + Environment.NewLine);
 				sw.Close();
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				//new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Writing to Log failed. File was probably deleted after start of Program.\nI suggest you restart the Program and contact me if it happens again.\n\nErrorMessage:\n" + e.ToString()).ShowDialog();
+				new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Writing to Log failed. File was probably deleted after start of Program.\nI suggest you restart the Program and contact me if it happens again.\n\nErrorMessage:\n" + e.ToString()).ShowDialog();
 				//System.Windows.Forms.MessageBox.Show("Writing to Log failed. File was probably deleted after start of Program.\n\nLogmessage:'" + pLineContent + "'\nI suggest you restart the Program and contact me if it happens again.\n\nErrorMessage:\n" + e.ToString());
 			}
 		}
@@ -559,7 +654,7 @@ namespace GermanRapKalenderClassLibaries.Helper
 			if (!doesPathExist(srcPath))
 			{
 				Logger.Log("ZIP Extraction Path is not a valid Filepath...wut");
-				//new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Could not find some of the Paths we use to keep track of GTA Files.").ShowDialog();
+				new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Could not find some of the Paths we use to keep track of GTA Files.").ShowDialog();
 				Environment.Exit(5);
 			}
 
@@ -628,13 +723,9 @@ namespace GermanRapKalenderClassLibaries.Helper
 			string rtrn = "";
 			try
 			{
-				Helper.Logger.Log("A");
 				System.Net.Http.HttpClient myHTTPClient = new System.Net.Http.HttpClient();
-				Helper.Logger.Log("B");
 				Task<string> myTaskString = myHTTPClient.GetStringAsync(pURL);
-				Helper.Logger.Log("C");
 				rtrn = myTaskString.GetAwaiter().GetResult();
-				Helper.Logger.Log("D");
 			}
 			catch (Exception e)
 			{
@@ -707,9 +798,9 @@ namespace GermanRapKalenderClassLibaries.Helper
 					//Helper.FileHandling.AddToDebug("Renaming: '" + pFilePathSource + "' to '" + pFilePathDest + "'.");
 					System.IO.File.Move(pFilePathSource, pFilePathDest);
 				}
-				catch (Exception)
+				catch (Exception e)
 				{
-					//new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Renaming File failed ('" + pFilePathSource + "' to '" + pFilePathDest + "').\nI suggest you restart the Program and contact me if it happens again.\n\nErrorMessage:\n" + e.ToString()).ShowDialog();
+					new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Renaming File failed ('" + pFilePathSource + "' to '" + pFilePathDest + "').\nI suggest you restart the Program and contact me if it happens again.\n\nErrorMessage:\n" + e.ToString()).ShowDialog();
 					Helper.Logger.Log("Renaming File failed ('" + pFilePathSource + "' to '" + pFilePathDest + "').", true, 0);
 
 				}
@@ -796,9 +887,9 @@ namespace GermanRapKalenderClassLibaries.Helper
 					File.Delete(pFilePath);
 				}
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				//new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Deleting File failed ('" + pFilePath + "').\nI suggest you restart the Program and contact me if it happens again.\n\nErrorMessage:\n" + e.ToString()).ShowDialog();
+				new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Deleting File failed ('" + pFilePath + "').\nI suggest you restart the Program and contact me if it happens again.\n\nErrorMessage:\n" + e.ToString()).ShowDialog();
 				Helper.Logger.Log("Deleting File failed ('" + pFilePath + "').", true, 0);
 			}
 		}
@@ -855,9 +946,9 @@ namespace GermanRapKalenderClassLibaries.Helper
 			{
 				File.CreateText(PathCombine(pPath, pFile)).Close();
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				//new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Create File failed ('" + PathCombine(pPath, pFile) + "').\nI suggest you restart the Program and contact me if it happens again.\n\nErrorMessage:\n" + e.ToString()).ShowDialog();
+				new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOkError, "Create File failed ('" + PathCombine(pPath, pFile) + "').\nI suggest you restart the Program and contact me if it happens again.\n\nErrorMessage:\n" + e.ToString()).ShowDialog();
 				Helper.Logger.Log("Create File failed ('" + PathCombine(pPath, pFile) + "').", true, 0);
 			}
 		}
@@ -981,6 +1072,38 @@ namespace GermanRapKalenderClassLibaries.Helper
 			}
 		}
 
+		public static void CreateAllZIPPaths(string pZIPFileExtractLocation)
+		{
+			// TODO, CTRLF FIX THIS MESS. OTHERWISE ZIP EXTRACTING SHIT WILL BREAK BECAUSE ITS A PIECE OF SHIT
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\DowngradeFiles");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\DowngradeFiles\update");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\UpgradeFiles_Backup");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\UpgradeFiles_Backup\update");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\UpgradeFiles");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\UpgradeFiles\update");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\SupportFiles\");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\SupportFiles\Notes");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\SupportFiles\Installer");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\SupportFiles\SaveFiles");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\DowngradeFiles_Alternative\");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\DowngradeFiles_Alternative\rockstar\");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\DowngradeFiles_Alternative\rockstar\127\");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\DowngradeFiles_Alternative\rockstar\127\update\");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\DowngradeFiles_Alternative\rockstar\124\");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\DowngradeFiles_Alternative\rockstar\124\update\");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\DowngradeFiles_Alternative\steam\");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\DowngradeFiles_Alternative\steam\127\");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\DowngradeFiles_Alternative\steam\127\update\");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\DowngradeFiles_Alternative\steam\124\");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\DowngradeFiles_Alternative\steam\124\update\");
+			Helper.FileHandling.createPath(pZIPFileExtractLocation.TrimEnd('\\') + @"\Project_127_Files\SupportFiles\DowngradedSocialClub\");
+
+
+
+		}
+
+
 
 		// ALL SORTS OF RANDOM METHODS
 
@@ -1087,25 +1210,5 @@ namespace GermanRapKalenderClassLibaries.Helper
 		}
 
 
-		/// <summary>
-		/// Read contents of an embedded resource file
-		/// </summary>
-		public static string ReadResourceFile(string filename)
-		{
-			var thisAssembly = Assembly.GetExecutingAssembly();
-			using (var stream = thisAssembly.GetManifestResourceStream(filename))
-			{
-				using (var reader = new StreamReader(stream))
-				{
-					return reader.ReadToEnd();
-				}
-			}
-		}
-
-		public static string[] GetAllManifestResourceNames()
-		{
-			return Assembly.GetExecutingAssembly().GetManifestResourceNames();
-		}
-
 	} // End of Class
-}
+} // End of NameSpace

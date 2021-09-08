@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Win32;
 
-namespace GermanRapKalenderClassLibaries.Helper
+namespace DIRM.Helper
 {
+	/// <summary>
+	/// Class of our own Logger
+	/// </summary>
 	public static class Logger
 	{
 		// We should probably use a logging libary / framework now that I think about it...whatevs
@@ -15,68 +20,28 @@ namespace GermanRapKalenderClassLibaries.Helper
 
 		private static Mutex mut = new Mutex();
 
-		static bool ManualStaticConstructorRunAlready = false;
-
-		static string LogFile = "";
-
 		/// <summary>
 		/// Init Function which gets called once at the start.
 		/// </summary>
-		public static void Init(string pLogFileLocation, string[] LogStart)
-		{
-			if (!ManualStaticConstructorRunAlready)
-			{
-				if (pLogFileLocation == "")
-				{
-					string Folder = Process.GetCurrentProcess().MainModule.FileName.Substring(0, Process.GetCurrentProcess().MainModule.FileName.LastIndexOf('\\'));
-					pLogFileLocation = Folder.TrimEnd('\\') + @"\AAA-Logfile.log";
-				}
-				LogFile = pLogFileLocation;
-				/*
-				Helper.Logger.Log("-", true, 0);
-				Helper.Logger.Log("-", true, 0);
-				Helper.Logger.Log("-", true, 0);
-				Helper.Logger.Log(" === DIRM Started (Version: '" + Globals.ProjectVersion + "' BuildInfo: '" + Globals.BuildInfo + "' Built at: '" + MyCreationDate + "' Central European Time) ===", true, 0);
-				Helper.Logger.Log("    Time Now: '" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") + "'", true, 0);
-				Helper.Logger.Log("    Time Now UTC: '" + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss") + "'", true, 0);
-				Helper.Logger.Log("Logging initiated. Time to the left is local time and NOT UTC. See Debug for more Info", true, 0);
-				*/
-
-				// Since the createFile Method will override an existing file
-
-
-				if (!FileHandling.doesFileExist(LogFile))
-				{
-					Helper.FileHandling.createFile(LogFile);
-				}
-
-
-				for (int i = 0; i <= LogStart.Length - 1; i++)
-				{
-					Helper.Logger.Log(LogStart[i], true, 0);
-				}
-
-				RollingLog();
-
-				ManualStaticConstructorRunAlready = true;
-			}
-		}
-
 		public static void Init()
 		{
-			if (!ManualStaticConstructorRunAlready)
+			// Since the createFile Method will override an existing file
+			if (!FileHandling.doesFileExist(Globals.Logfile))
 			{
-				string MyCreationDate = Helper.FileHandling.GetCreationDate(Process.GetCurrentProcess().MainModule.FileName).ToString("yyyy-MM-ddTHH:mm:ss");
-				string MyCreationDateUTC = Helper.FileHandling.GetCreationDate(Process.GetCurrentProcess().MainModule.FileName, true).ToString("yyyy-MM-ddTHH:mm:ss");
-
-				List<string> ListString = new List<string>();
-				ListString.Add("-");
-				ListString.Add("-");
-				ListString.Add("-");
-				ListString.Add(" === Logging Started (Built at: '" + MyCreationDate + "' Local Time ['" + MyCreationDateUTC + "' UTC], Time Now: '" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") + "' ['" + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss") + "' UTC])");
-
-				Init("", ListString.ToArray());
+				Helper.FileHandling.createFile(Globals.Logfile);
 			}
+
+
+
+			string MyCreationDate = Helper.FileHandling.GetCreationDate(Process.GetCurrentProcess().MainModule.FileName).ToString("yyyy-MM-ddTHH:mm:ss");
+
+			Helper.Logger.Log("-", true, 0);
+			Helper.Logger.Log("-", true, 0);
+			Helper.Logger.Log("-", true, 0);
+			Helper.Logger.Log(" === DIRM Started (Version: '" + Globals.ProjectVersion + "' BuildInfo: '" + Globals.BuildInfo + "' Built at: '" + MyCreationDate + "' Central European Time) ===", true, 0);
+			Helper.Logger.Log("    Time Now: '" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") + "'", true, 0);
+			Helper.Logger.Log("    Time Now UTC: '" + DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss") + "'", true, 0);
+			Helper.Logger.Log("Logging initiated. Time to the left is local time and NOT UTC. See Debug for more Info", true, 0);
 		}
 
 		/// <summary>
@@ -86,10 +51,6 @@ namespace GermanRapKalenderClassLibaries.Helper
 		public static void Log(string pLogMessage, bool pSkipLogSetting, int pLogLevel)
 		{
 			mut.WaitOne();
-			if (!ManualStaticConstructorRunAlready)
-			{
-				Init();
-			}
 			if (pSkipLogSetting && !String.IsNullOrWhiteSpace(pLogMessage))
 			{
 				string LogMessage = "[" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss") + "] - ";
@@ -101,7 +62,7 @@ namespace GermanRapKalenderClassLibaries.Helper
 				}
 
 				LogMessage += pLogMessage;
-				Helper.FileHandling.AddToLog(LogFile, LogMessage);
+				Helper.FileHandling.AddToLog(Globals.Logfile, LogMessage);
 			}
 			mut.ReleaseMutex();
 		}
@@ -166,7 +127,7 @@ namespace GermanRapKalenderClassLibaries.Helper
 		/// </summary>
 		public static void RollingLog()
 		{
-			string[] Logs = Helper.FileHandling.ReadFileEachLine(LogFile);
+			string[] Logs = Helper.FileHandling.ReadFileEachLine(Globals.Logfile);
 			if (Logs.Length > 2500)
 			{
 				List<string> myNewLog = new List<string>();
@@ -177,11 +138,11 @@ namespace GermanRapKalenderClassLibaries.Helper
 					i++;
 				}
 				string[] tmp = myNewLog.ToArray();
-				Helper.FileHandling.WriteStringToFileOverwrite(LogFile, tmp);
+				Helper.FileHandling.WriteStringToFileOverwrite(Globals.Logfile, tmp);
 			}
 		}
 
 
 
 	} // End of Class
-}
+} // End of NameSpace

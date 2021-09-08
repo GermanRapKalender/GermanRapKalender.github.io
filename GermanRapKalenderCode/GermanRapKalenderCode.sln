@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GermanRapKalenderRedditBotS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GermanRapKalenderRedditBotCommandLineTool", "GermanRapKalenderRedditBotCommandLineTool\GermanRapKalenderRedditBotCommandLineTool.csproj", "{859F4506-E233-4959-B68E-EC35CA90E054}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GermanRapKalenderUI", "GermanRapKalenderUI\GermanRapKalenderUI.csproj", "{43F07766-BE7D-4A73-9316-79449D680167}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GermanRapKalenderWindowsUI", "GermanRapKalenderWindowsUI\GermanRapKalenderWindowsUI.csproj", "{4C83DFB2-8A81-4D8B-BF87-1B8C6CD777D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,14 +53,14 @@ Global
 		{859F4506-E233-4959-B68E-EC35CA90E054}.Release|Any CPU.Build.0 = Release|Any CPU
 		{859F4506-E233-4959-B68E-EC35CA90E054}.Release|x64.ActiveCfg = Release|x64
 		{859F4506-E233-4959-B68E-EC35CA90E054}.Release|x64.Build.0 = Release|x64
-		{43F07766-BE7D-4A73-9316-79449D680167}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43F07766-BE7D-4A73-9316-79449D680167}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{43F07766-BE7D-4A73-9316-79449D680167}.Debug|x64.ActiveCfg = Debug|x64
-		{43F07766-BE7D-4A73-9316-79449D680167}.Debug|x64.Build.0 = Debug|x64
-		{43F07766-BE7D-4A73-9316-79449D680167}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43F07766-BE7D-4A73-9316-79449D680167}.Release|Any CPU.Build.0 = Release|Any CPU
-		{43F07766-BE7D-4A73-9316-79449D680167}.Release|x64.ActiveCfg = Release|x64
-		{43F07766-BE7D-4A73-9316-79449D680167}.Release|x64.Build.0 = Release|x64
+		{4C83DFB2-8A81-4D8B-BF87-1B8C6CD777D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C83DFB2-8A81-4D8B-BF87-1B8C6CD777D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C83DFB2-8A81-4D8B-BF87-1B8C6CD777D4}.Debug|x64.ActiveCfg = Debug|x64
+		{4C83DFB2-8A81-4D8B-BF87-1B8C6CD777D4}.Debug|x64.Build.0 = Debug|x64
+		{4C83DFB2-8A81-4D8B-BF87-1B8C6CD777D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C83DFB2-8A81-4D8B-BF87-1B8C6CD777D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C83DFB2-8A81-4D8B-BF87-1B8C6CD777D4}.Release|x64.ActiveCfg = Release|x64
+		{4C83DFB2-8A81-4D8B-BF87-1B8C6CD777D4}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

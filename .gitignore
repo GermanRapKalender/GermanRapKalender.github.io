@@ -5,6 +5,7 @@
 
 # My ini file for API Stuff
 GermanRapKalenderCode/GermanRapKalenderClassLibaries/MyAPIConfig.ini
+GermanRapKalenderCode/GermanRapKalenderWindowsUI/Scraping/MyAPIConfig.ini
 
 # User-specific files
 *.rsuser
