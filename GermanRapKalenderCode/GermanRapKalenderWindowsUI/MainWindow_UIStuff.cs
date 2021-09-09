@@ -21,7 +21,75 @@ namespace DIRM
 	{
 		public ViewModel viewModel;
 
+		bool _CurrentlyDeinUpdateScraping = false;
+		bool _CurrentlySpotifyScraping = false;
+		bool _CurrentlyYoutubeScraping = false;
 
+
+
+		bool CurrentlyDeinUpdateScraping
+		{
+			get
+			{
+				return _CurrentlyDeinUpdateScraping;
+			}
+			set
+			{
+				_CurrentlyDeinUpdateScraping = value;
+				EnableDisableDP();
+				EnableDisableLinkScraping();
+			}
+		}
+		bool CurrentlyYoutubeScraping
+		{
+			get
+			{
+				return _CurrentlyYoutubeScraping;
+			}
+			set
+			{
+				_CurrentlyYoutubeScraping = value;
+				EnableDisableDP();
+			}
+		}
+		bool CurrentlySpotifyScraping
+		{
+			get
+			{
+				return _CurrentlySpotifyScraping;
+			}
+			set
+			{
+				_CurrentlySpotifyScraping = value;
+				EnableDisableDP();
+			}
+		}
+
+		void EnableDisableDP()
+		{
+			if (!CurrentlyDeinUpdateScraping && !CurrentlySpotifyScraping && !CurrentlyYoutubeScraping)
+			{
+				dp.IsEnabled = true;
+			}
+			else
+			{
+				dp.IsEnabled = false;
+			}
+		}
+
+		void EnableDisableLinkScraping()
+		{
+			if (!CurrentlyDeinUpdateScraping)
+			{
+				btn_GetSpotifyLinks.IsEnabled = true;
+				btn_GetYoutubeLinks.IsEnabled = true;
+			}
+			else
+			{
+				btn_GetSpotifyLinks.IsEnabled = false;
+				btn_GetYoutubeLinks.IsEnabled = false;
+			}
+		}
 
 		/// <summary>
 		/// Enum for potential Loaded Pages

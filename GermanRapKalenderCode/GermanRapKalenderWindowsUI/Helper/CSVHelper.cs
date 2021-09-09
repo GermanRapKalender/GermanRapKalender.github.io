@@ -12,7 +12,7 @@ namespace DIRM.Helper
 	{
 		static string HeadingLine = "Artist" + CharSeperator + "Title" + CharSeperator + "ReleaseKind" + CharSeperator + "Info" + CharSeperator + "Link";
 
-		static char CharSeperator = '=';
+		static char CharSeperator = '|';
 
 		public static IList<Helper.CalenderEntry> Read(string FilePath)
 		{

@@ -104,46 +104,54 @@ namespace DIRM.Popups
 					myLBL_A.Content = "On File " + (i + 1).ToString() + " / " + allFiles.Length;
 				});
 
-
-
 				string RegexPattern = @"^[0-9]{4}_[0-9]{2}_[0-9]{2}.csv$";
 				Regex MyRegex = new Regex(RegexPattern);
 				Match MyMatch = MyRegex.Match(Helper.FileHandling.PathSplitUp(allFiles[i])[1]);
 				if (MyMatch.Success)
 				{
-					IList<Helper.CalenderEntry> myEntries = Helper.CSVHelper.Read(allFiles[i]);
+					IList<Helper.CalenderEntry> myEntries = new List<Helper.CalenderEntry>();
+
+					Application.Current.Dispatcher.Invoke((Action)delegate
+					{
+						myEntries = Helper.CSVHelper.Read(allFiles[i]);
+					});
+
+
 					for (int j = 0; j <= myEntries.Count - 1; j++)
 					{
 						Application.Current.Dispatcher.Invoke((Action)delegate
 						{
 							long progress = (100 * (j + 1) / myEntries.Count);
-							myPB_A.Value = progress;
-							myLBL_A.Content = "On File " + (j + 1).ToString() + " / " + myEntries.Count;
+							myPB_B.Value = progress;
+							myLBL_B.Content = "On Release " + (j + 1).ToString() + " / " + myEntries.Count;
 						});
 
 
-						if (!myEntries[j].Link.ToLower().Contains(PopupScrapeLinksAllRealeasesType.ToString().ToLower())) 
+						if (!myEntries[j].Link.ToLower().Contains(PopupScrapeLinksAllRealeasesType.ToString().ToLower()))
 						{
 							string NewLink = "";
 							if (PopupScrapeLinksAllRealeasesType == PopupScrapeLinksAllRealeasesTypes.Youtu)
 							{
-								NewLink =Scraping.YoutubeScrape.GetLinkFromSearch(MainWindow.MW.viewModel.CalenderEntries[j]).Result;
+								NewLink = Scraping.YoutubeScrape.GetLinkFromSearch(myEntries[j]).Result;
 							}
 							else if (PopupScrapeLinksAllRealeasesType == PopupScrapeLinksAllRealeasesTypes.Spotify)
 							{
-								NewLink = Scraping.SpotifyScraper.GetLinkFromSearch(MainWindow.MW.viewModel.CalenderEntries[j]).Result;
+								NewLink = Scraping.SpotifyScraper.GetLinkFromSearch(myEntries[j]).Result;
 							}
 
 							if (!String.IsNullOrWhiteSpace(NewLink))
 							{
-								myEntries[j].Link += " " + NewLink;
+								myEntries[j].Link = myEntries[j].Link.Trim(' ') + " " + NewLink;
 							}
 						}
 					}
 
-					Helper.CSVHelper.Save(allFiles[i], myEntries, true);
-				}
 
+					Application.Current.Dispatcher.Invoke((Action)delegate
+					{
+						Helper.CSVHelper.Save(allFiles[i], myEntries, true);
+					});
+				}
 			}
 		}
 

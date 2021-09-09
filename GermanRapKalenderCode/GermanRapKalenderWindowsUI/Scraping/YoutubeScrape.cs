@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace DIRM.Scraping
 {
@@ -24,7 +25,10 @@ namespace DIRM.Scraping
 			{
 				if (!Globals.YoutubeSlowWarningThrown)
 				{
-					MainWindow.MW.SetUpAnnoucement("Will use slow(er) Youtube Scraping since the API RateLimit is reached for today.\nThis resets daily.\n");
+					Application.Current.Dispatcher.Invoke((Action)delegate
+					{
+						MainWindow.MW.SetUpAnnoucement("Will use slow(er) Youtube Scraping since the API RateLimit is reached for today.\nThis resets daily.\n");
+					});
 					Globals.YoutubeSlowWarningThrown = true;
 				}
 				return await YoutubeSearch.GetLinkFromSearch(myRelease);

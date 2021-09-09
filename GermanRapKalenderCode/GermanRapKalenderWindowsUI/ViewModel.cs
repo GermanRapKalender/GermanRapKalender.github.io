@@ -26,7 +26,7 @@ namespace DIRM
 
 			this.CalenderEntries.RemoveAt(index);
 
-			tmp.Link = link;
+			tmp.Link = link.Trim(' ');
 
 			this.CalenderEntries.Insert(index, tmp);
 

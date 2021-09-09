@@ -31,17 +31,18 @@ Clean up code, add logging, etc etc...Maybe. If i feel like it. Devs be lazy.
 [DONE] Open csv in notepad, open Path with CSVs
 [DONE] Added Date stuff
 [DONE] fixed saving empty files
+[DONE] Disabling DP and scraping links buttons under circumstances
+[DONE] fixed "empty" youtube links...CSV Seperator was fucking us lmao
 [DONE, NEEDS TESTING] Export / Import / Spotify / Youtube buttons to have contextMenu to determine what to do. 
 	[Implemented] Export / Import - Everything or just the specific day.
 	[UI Implemented, Backend Implemented, MiddleEnd Async UI implemented] Spotify / Youtube - Everything or just the specific day.
-Generate CSVs for Neini
+[DONE] Generate CSVs for Neini
+
+
 re-point installer stuff to new repo. Plus new UUID and stuff
-
-
-Crash while scraping all days
-Generating Neini stuff works, but trimming is fucked somewhere...
-Some youtube links no video ID (only happens AFTER a save and reload??? what the fuck is going on?)
-disable dp while scraping
+make scrape all spotify faster (declare and init task, and await them when all are done)
+testing data for events
+give neini his data
 
 */
 
@@ -96,6 +97,7 @@ namespace DIRM
 
 		private void btn_GetFromDate_Click(object sender, RoutedEventArgs e)
 		{
+			CurrentlyDeinUpdateScraping = true;
 			try
 			{
 				Scraping.ScrapingLogic.ScrapeReleases();
@@ -104,6 +106,7 @@ namespace DIRM
 			{
 				Helper.Logger.Log(ex);
 			}
+			CurrentlyDeinUpdateScraping = false;
 		}
 
 
@@ -127,6 +130,7 @@ namespace DIRM
 
 		private void MI_WebsiteSource_Click(object sender, RoutedEventArgs e)
 		{
+			CurrentlyDeinUpdateScraping = true;
 			try
 			{
 				Scraping.ScrapingLogic.ScrapeReleases(true, false);
@@ -135,10 +139,12 @@ namespace DIRM
 			{
 				Helper.Logger.Log(ex);
 			}
+			CurrentlyDeinUpdateScraping = false;
 		}
 
 		private void MI_CustomURL_Click(object sender, RoutedEventArgs e)
 		{
+			CurrentlyDeinUpdateScraping = true;
 			try
 			{
 				Scraping.ScrapingLogic.ScrapeReleases(false, true);
@@ -147,6 +153,7 @@ namespace DIRM
 			{
 				Helper.Logger.Log(ex);
 			}
+			CurrentlyDeinUpdateScraping = false;
 		}
 
 
@@ -282,8 +289,9 @@ namespace DIRM
 		}
 
 
-		private async void btn_GetSpotifyLinks_Click(object sender, RoutedEventArgs e)
+		private void btn_GetSpotifyLinks_Click(object sender, RoutedEventArgs e)
 		{
+			CurrentlySpotifyScraping = true;
 			try
 			{
 				Scraping.ScrapingLogic.ScrapeSpotify();
@@ -292,10 +300,12 @@ namespace DIRM
 			{
 				Helper.Logger.Log(ex);
 			}
+			CurrentlySpotifyScraping = false;
 		}
 
 		private void btn_GetYoutubeLinks_Click(object sender, RoutedEventArgs e)
 		{
+			CurrentlyYoutubeScraping = true;
 			try
 			{
 				Scraping.ScrapingLogic.ScrapeYoutube();
@@ -304,6 +314,7 @@ namespace DIRM
 			{
 				Helper.Logger.Log(ex);
 			}
+			CurrentlyYoutubeScraping = false;
 		}
 
 
@@ -402,6 +413,9 @@ namespace DIRM
 						MI_GenerateNeini_Click(null, null);
 					}
 				}
+
+				new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupOk, "Starting now, just dont touch anything.\nDONT TOUCH ANYTHING\nI was too lazy to implement a UI around this...\nYou will get notified when this is done.").ShowDialog();
+
 				List<string> ListOfFilesCreated = new List<string>();
 				Helper.FileHandling.createPath(dialogresult.TrimEnd('\\') + @"\Dates");
 				Helper.FileHandling.createPath(dialogresult.TrimEnd('\\') + @"\Artists");
@@ -436,13 +450,14 @@ namespace DIRM
 					foreach (string Artist in myArtists)
 					{
 						string RealArtist = Helper.FileHandling.RemoveLeadingTrailingSpaces(Artist);
+
 						if (!string.IsNullOrWhiteSpace(RealArtist))
 						{
-							if (!sth.ContainsKey(Artist))
+							if (!sth.ContainsKey(RealArtist))
 							{
-								sth.Add(Artist, new List<Helper.CalenderEntry>());
+								sth.Add(RealArtist, new List<Helper.CalenderEntry>());
 							}
-							sth[Artist].Add(myCE);
+							sth[RealArtist].Add(myCE);
 						}
 					}
 				}
@@ -463,6 +478,14 @@ namespace DIRM
 				Helper.FileHandling.WriteStringToFileOverwrite(dialogresult.TrimEnd('\\') + @"\AllFileNames.csv", ListOfFilesCreated.ToArray());
 
 				dp_SelectedDateChanged(null, null);
+
+				Popups.Popup yesno2 = new Popups.Popup(Popups.Popup.PopupWindowTypes.PopupYesNo, "Done.\nOpen that folder?");
+				yesno2.ShowDialog();
+				if (yesno2.DialogResult == true)
+				{
+					Process.Start("explorer.exe", dialogresult);
+				}
+
 			}
 		}
 
@@ -519,6 +542,14 @@ namespace DIRM
 		private void MI_YoutubeEveryday_Click(object sender, RoutedEventArgs e)
 		{
 			Scraping.ScrapingLogic.ScrapeAllYoutube();
+		}
+
+		private void btn_Hamburger_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+		{
+			if (e.ClickCount >= 3)
+			{
+				Process.Start("notepad.exe", Globals.Logfile);
+			}
 		}
 	}
 }

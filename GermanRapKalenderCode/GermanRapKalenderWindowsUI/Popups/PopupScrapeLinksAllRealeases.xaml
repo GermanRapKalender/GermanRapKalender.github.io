@@ -8,7 +8,7 @@
       Title="Popup" 
         Background="{x:Static local:MyColors.PU_Background}"
         WindowStyle="None" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" MouseLeftButtonDown="Window_MouseLeftButtonDown"
-        Height="2400"
+        Height="600"
         Width="420"
         SourceInitialized="Window_SourceInitialized"
         Icon="/Artwork/icon.png">
