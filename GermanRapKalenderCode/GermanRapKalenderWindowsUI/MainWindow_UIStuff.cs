@@ -303,8 +303,11 @@ namespace DIRM
 			}
 
 			// Set DisplayStartDate of DatePicker to the day where DeinUpdate started Posting
+			// Set DisplayStartDate of DatePicker to the day where DeinUpdate started Posting
 			dp.DisplayDateStart = new DateTime(2018, 03, 12);
-			dp.DisplayDateEnd = LatestFridayRelease.AddYears(1);
+
+			dp.DisplayDateStart = new DateTime(1900, 1, 1);
+			dp.DisplayDateEnd = LatestFridayRelease.AddYears(3);
 
 			// Make it select the LatestFridayRelease
 			dp.SelectedDate = LatestFridayRelease;

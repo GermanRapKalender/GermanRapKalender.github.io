@@ -7,7 +7,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:helper="clr-namespace:DIRM.Helper"
         mc:Ignorable="d"
-        Title="Das ist Räuber Musik" Height="650" Width="1200"
+        Title="GermanRapKalenderUI" Height="650" Width="1200"
         WindowStyle="None" 
         ResizeMode="CanMinimize"
         AllowsTransparency="False" 

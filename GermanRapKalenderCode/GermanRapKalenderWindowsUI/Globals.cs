@@ -67,7 +67,7 @@ namespace DIRM
 		{
 			get
 			{
-				string masterURL = "https://raw.githubusercontent.com/TwosHusbandS/DasIstRaueberMusik/master/DIRM/Installer/update.xml";
+				string masterURL = "https://raw.githubusercontent.com/GermanRapKalender/GermanRapKalender.github.io/master/GermanRapKalenderCode/GermanRapKalenderWindowsUI/Installer/update.xml";
 				return Helper.FileHandling.GetStringFromURL(masterURL);
 			}
 		}
@@ -166,7 +166,7 @@ namespace DIRM
 		{
 			get
 			{
-				return Settings.CSVPath.TrimEnd('\\') + @"\DasIstRaueberMusik";
+				return Settings.CSVPath.TrimEnd('\\') + @"\GermanRapKalender";
 			}
 		}
 		
@@ -229,7 +229,7 @@ namespace DIRM
 		{
 			get
 			{
-				return "Version 0.2.0.0 - Build 1";
+				return "Version 0.2.0.1 - Build 1";
 			}
 		}
 
