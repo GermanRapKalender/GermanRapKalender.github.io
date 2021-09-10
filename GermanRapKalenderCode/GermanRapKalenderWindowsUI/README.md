@@ -165,9 +165,9 @@ Discord - [@ths#0305][discord-url]
 [dirm-url]: https://github.com/GermanRapKalender/GermanRapKalender.github.io/tree/master/GermanRapKalenderCode/GermanRapKalenderWindowsUI/README.md
 [twitter-shield]: https://img.shields.io/badge/Twitter-@thSbizz-1DA1F2?style=plastic&logo=Twitter
 [discord-shield]: https://img.shields.io/badge/Discord-@thS%230305-7289DA?style=plastic&logo=Discord
-[changelogs-url]: https://github.com/GermanRapKalender/GermanRapKalender.github.io/tree/master/Installer/Info/Changelogs
-[installer-folder-url]: https://github.com/GermanRapKalender/GermanRapKalender.github.io/tree/master/Installer
-[installer-latest-url]: https://github.com/GermanRapKalender/GermanRapKalender.github.io/tree/master/Installer/DIRM_Installer_Latest.exe
+[changelogs-url]: https://github.com/GermanRapKalender/GermanRapKalender.github.io/tree/master/GermanRapKalenderCode/GermanRapKalenderWindowsUI/Installer/Info/Changelogs
+[installer-folder-url]: https://github.com/GermanRapKalender/GermanRapKalender.github.io/tree/master/GermanRapKalenderCode/GermanRapKalenderWindowsUI/Installer
+[installer-latest-url]: https://github.com/GermanRapKalender/GermanRapKalender.github.io/raw/master/GermanRapKalenderCode/GermanRapKalenderWindowsUI/Installer/GermanRapKalenderUI_Installer_Latest.exe
 [license-shield]: https://img.shields.io/badge/License-MIT-4DC71F?style=plastic
 [license-url]: https://github.com/GermanRapKalender/GermanRapKalender.github.io/tree/master/GermanRapKalenderCode/GermanRapKalenderWindowsUI/LICENSE.md
 [maintained-shield]: https://img.shields.io/badge/Maintained-Meh-FFDB3A?style=plastic
